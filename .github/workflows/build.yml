@@ -15,17 +15,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x android-native/gradlew
+      - name: Find and Grant permissions to gradlew
+        run: |
+          find . -name "gradlew" -exec chmod +x {} \;
 
       - name: Build with Gradle
-        working-directory: ./android-native
-        run: ./gradlew assembleDebug
+        run: |
+          GRADLEW=$(find . -name "gradlew" | head -n 1)
+          DIR=$(dirname "$GRADLEW")
+          cd "$DIR"
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: viaje-rural-apk
-          path: android-native/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/*.apk"
