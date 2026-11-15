@@ -17,8 +17,21 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        working-directory: "./viaje-rural (1)/android-native"
-        run: gradle wrapper && ./gradlew assembleDebug
+        run: |
+          TARGET_DIR=$(find . -type d -name "android-native" | head -n 1)
+          if [ -z "$TARGET_DIR" ]; then
+            echo "ERROR: No se encontró la carpeta android-native"
+            exit 1
+          fi
+          echo "Entrando a la carpeta: $TARGET_DIR"
+          cd "$TARGET_DIR"
+          chmod +x gradlew || true
+          if [ -f "gradlew" ]; then
+            ./gradlew assembleDebug
+          else
+            gradle wrapper
+            ./gradlew assembleDebug
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
