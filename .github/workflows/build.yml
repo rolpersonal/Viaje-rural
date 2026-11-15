@@ -16,25 +16,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Gradle (Direct)
-        run: |
-          # Buscar si existe el gradlew. Si no, usar gradle directamente.
-          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ -f "$GRADLEW_PATH" ]; then
-            echo "Usando gradlew encontrado en: $GRADLEW_PATH"
-            DIR=$(dirname "$GRADLEW_PATH")
-            cd "$DIR"
-            chmod +x gradlew
-            ./gradlew assembleDebug
-          else
-            echo "No se encontró gradlew. Compilando con gradle del sistema..."
-            # Buscar la carpeta que contiene el build.gradle raíz
-            BUILD_DIR=$(find . -name "build.gradle" -o -name "build.gradle.kts" | grep -v "/app/" | head -n 1 | xargs dirname)
-            echo "Carpeta del proyecto: $BUILD_DIR"
-            cd "$BUILD_DIR"
-            gradle wrapper
-            ./gradlew assembleDebug
-          fi
+      - name: Build with Gradle
+        working-directory: "./viaje-rural (1)/android-native"
+        run: gradle wrapper && ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
